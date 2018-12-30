@@ -376,4 +376,31 @@ export default class Auth {
         throw new Auth0Error(response);
       });
   }
+
+  authenticateUser(parameters = {}) {
+    const payload = apply(
+      {
+        parameters: {
+          username: { required: true },
+          password: { required: true },
+          grant_type: 'password',
+          connection: { required: true },
+          scope: { required: false }
+        }
+      },
+      parameters
+    );
+
+    return this.client
+      .post('/oauth/ro', {
+        ...payload,
+        client_id: this.clientId
+      })
+      .then(response => {
+        if (response.ok && response.json) {
+          return toCamelCase(response.json);
+        }
+        throw new Auth0Error(response);
+      });
+  }
 }
